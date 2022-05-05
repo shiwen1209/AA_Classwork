@@ -9,5 +9,7 @@ class Tile
             @given = false
         end
         @value = value
+        @prev_guessed = []
     end
+    
 end
