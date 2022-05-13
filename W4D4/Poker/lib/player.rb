@@ -1,0 +1,123 @@
+def Player 
+
+    attr_reader :board, :name
+    attr_accessor :hand, :chips, :big_blind, :current_bet, :all_in, :active
+    def initalize(name, password, board, chips = 1000)
+        @name = name
+        @board = board 
+        @password = password
+        @hand = Hand.new # reset for each round 
+        @chips =chips  
+        @big_blind = false #reset for each round 
+        @active = true #reset for each round
+        @all_in = false # reset for each round 
+        @current_bet = 0 #keeps track of current bet in a turn #reset for each turn
+    end
+
+    def reset
+        @hand = Hand.new
+        @big_blind = false
+        @active = true
+        @all_in = false
+        @current_bet = 0
+    end
+
+    def get_move
+
+        begin
+            puts "please enter your command"
+            input = gets.chomp
+            move, num = input
+            num = num.to_i
+            case move
+            when allin
+                self.all_in
+            when bet
+                self.bet(num)
+            when call
+                self.call
+            when raiseto
+                self.raiseto(num)
+            when fold
+                self.fold
+            when check
+                self.check
+            when exit
+                #add exiting the game
+            end
+        rescue StandardError=>e 
+            puts e
+            retry
+        end
+    end 
+
+    def check
+        raise StandardError.new("you cannot check") if @current_bet < @board.minimum_bet
+        @board.count += 1
+    end
+
+    def go_all_in
+        #player stay active until the end 
+        # player use all their chips 
+
+        match_bet = @board.minimum_bet - @current_bet
+
+        @board.main_pot += @chips  
+        if @chips > match_bet
+            @board.minimum_bet = @chips + @current_bet
+        end
+        @current_bet += @chips
+        @chips = 0  # need to revise base on other players
+        @board.count += 1
+        @all_in = true  
+    end
+
+    def bet(num)
+        # only use this for post flop
+        raise StandardError.new("you cannot use this action") if @board.minimum_bet > start_bet
+        raise StandardError.new("you have to bet at least # {@board.start_bet}") if num < start_bet
+        raise StandardError.new("you don't have enough money") if num > chips
+        @board.main_pot += num
+        @current_bet += num
+        @chips -= num
+        @board.minimum_bet = bet
+        @board.count += 1
+    end
+
+    def raiseto(num)
+        bet = num - @current_bet
+        raise StandardError.new("you dont have enough money") if bet > @chips
+        @board.main_pot += bet
+        @current_bet += bet
+        @chips -= bet
+        @board.minimum_bet = num
+        @board.count = 1 # reset the board count to 1 when someone raises
+    end
+
+    def call
+        bet = @board.minimum_bet - @current_bet
+        raise StandardError.new("you dont have enough money") if bet > @chips
+        @board.main_pot += bet
+        @current_bet += bet
+        @chips -= bet
+        @board.count += 1
+    end
+
+    def fold
+        # player become inactiv
+        # player forego their hands
+        self.active = false
+    end
+
+    def blind_move
+        if @chips < @board.start_bet
+            self.go_all_in
+        else 
+            @board.main_pot += @board.start_bet
+            @current_bet += @board.start_bet
+            @chips -= @board.start_bet
+            get_move
+        end
+    end
+
+end 
