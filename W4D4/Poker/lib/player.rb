@@ -10,7 +10,7 @@ class Player
         @name = name
         @board = board 
         @password = password
-        @hand = Hand.new # reset for each round 
+        @hand = Hand.new(@board) # reset for each round 
         @chips =chips  
         @big_blind = false #reset for each round 
         @active = true #reset for each round
@@ -19,7 +19,7 @@ class Player
     end
 
     def reset
-        @hand = Hand.new
+        @hand = Hand.new(@board)
         @big_blind = false
         @active = true
         @all_in = false
@@ -71,10 +71,12 @@ class Player
         @board.main_pot += @chips  
         if @chips > match_bet
             @board.minimum_bet = @chips + @current_bet
+            @board.count = 1
+        else
+            @board.count += 1
         end
         @current_bet += @chips
         @chips = 0  # need to revise base on other players
-        @board.count += 1
         @all_in = true  
     end
 
@@ -83,7 +85,7 @@ class Player
         # only use this for post flop
         raise StandardError.new("you cannot use this action") if @board.players.any? {|player| player.current_bet > 0}
         raise StandardError.new("you have to bet at least # {@board.start_bet}") if num < @board.start_bet
-        raise StandardError.new("you don't have enough money") if num > chips
+        raise StandardError.new("you don't have enough money") if num >= chips
         @board.main_pot += num
         @current_bet += num
         @chips -= num
@@ -93,7 +95,8 @@ class Player
 
     def raiseto(num)
         bet = num - @current_bet
-        raise StandardError.new("you dont have enough money") if bet > @chips
+        raise StandardError.new("you dont have enough money") if bet >= @chips
+        raise StandardError.new("you cannot raise") if @board.minimum_bet <= 0 
         @board.main_pot += bet
         @current_bet += bet
         @chips -= bet
@@ -103,7 +106,8 @@ class Player
 
     def call
         bet = @board.minimum_bet - @current_bet
-        raise StandardError.new("you dont have enough money") if bet > @chips
+        raise StandardError.new("you dont have enough money") if bet >= @chips
+        raise StandardError.new("you cannot call") if @current_bet == @board.minimum_bet
         @board.main_pot += bet
         @current_bet += bet
         @chips -= bet

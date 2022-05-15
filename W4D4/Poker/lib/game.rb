@@ -1,22 +1,25 @@
+require_relative "board.rb"
+require_relative "player.rb"
+
 class Game
     attr_reader :num_players, :board, :players
 
     def initialize
         puts "How many players are playing?"
-        @num_players = gets.chomp
-        if !num_players.is_a?(Integer) || num_players > 8 || num_players < 1
+        @num_players = gets.chomp.to_i
+        if num_players > 8 || num_players < 1
             raise InputError.new("Invalid Number of Players")
         end
 
         @board = Board.new(@num_players)
 
-        @players = [] #might not be needed, here JIC
+        # @players = [] #might not be needed, here JIC
 
         i = 0
         while i < @num_players
             puts "Player #{i+1}, please enter your name: "
             p_name = gets.chomp
-            p_name = inp[0..11] if inp.length > 12
+            p_name = p_name[0..11] if p_name.length > 12
             if p_name[0..1].downcase == "da" || p_name[0..3].downcase == "will" || p_name[0..6].downcase == "william" || p_name.downcase[0..6] == "frinxor"
                 earnings = 500
             else
@@ -25,8 +28,8 @@ class Game
             puts "Please enter a short password"
             passw = gets.chomp
             puts "that's not short lol hope u can remember that" if passw.length > 5
-            player = Player.new(inp, passw, @board, earnings)
-            @players << player
+            player = Player.new(p_name, passw, @board, earnings)
+            # @players << player
             @board.players << player
             
             i += 1
@@ -34,6 +37,9 @@ class Game
     end
 
     def play
+        until @board.players.length <= 1
+            @board.play_round
+        end
         
     end
 
@@ -44,3 +50,6 @@ class Game
     # end
 
 end
+
+g = Game.new
+g.play
