@@ -28,13 +28,24 @@ class Board
     end
 
     def move_piece(start_pos, end_pos) #need to refactor to add color of piece
-        raise StandardError.new('starting position is empty') if self[start_pos] == @null_piece
+
         piece = self[start_pos]
-        p "a"
-        p piece.pos
-        p "b"
-        p piece.moves
-        raise StandardError.new("Invalid move") if !piece.moves.include?(end_pos)
+        raise StandardError.new('starting position is empty') if piece.is_a?(NullPiece)
+        raise StandardError.new('This piece has no valid move') if piece.valid_moves.length == 0 
+
+        # p "a"
+        # p start_pos
+        # p piece.pos
+        # p end_pos
+        # p "b"
+        # p piece.moves
+        raise StandardError.new("Invalid move") if !piece.valid_moves.include?(end_pos)
+        old_piece = self[end_pos]
+        if old_piece.color == :white  #remove the old piece if it's taken by the new piece
+            @white_pieces.delete(old_piece)
+        elsif old_piece.color == :black
+            @black_pieces.delete(old_piece)
+        end
         self[end_pos] = piece
         piece.pos = end_pos
         self[start_pos] = @null_piece
@@ -48,14 +59,23 @@ class Board
     end
 
     def in_check?(color)
-        p "check?"
+        # p "check?"
         king_pos = find_king(color)
         if color == :black
+            # p "gg"
             @white_pieces.each do |piece2|
                 return true if piece2.moves.include?(king_pos)
             end
         elsif color == :white
+            # p "dax"
+            # p @black_pieces.length
             @black_pieces.each do |piece2|
+                # p "*****"
+                # p piece2.class
+                # p piece2.pos
+                # p piece2.moves
+                # p "king"
+                # p king_pos
                 return true if piece2.moves.include?(king_pos)
             end
         end
@@ -66,6 +86,10 @@ class Board
         p "m8?"
         if color == :white 
             white_pieces.each do |piece|
+                # p "abcde"
+                # p piece.class
+                # p piece.pos
+                # p piece.valid_moves
                 return false if !piece.valid_moves.empty?
             end
         else 
@@ -76,37 +100,7 @@ class Board
 
         return true
     end
-    
 
-        # king_pos = find_king(color)
-        # king_moves = self[king_pos].moves # return white king's moves
-        # if king_moves.length == 0 && surround_moves(king_pos).all? {|pos| self[pos].color == color} 
-        #     return false
-        # end
-        # other_moves = [] # return all white piece's move include the king's
-        # opponents_moves = [] #return all black piece's move 
-        # if color == :white 
-        #     black_pieces.each do |piece|
-        #         opponents_moves += piece.moves
-        #     end
-        #     white_pieces.each do |piece|
-        #         other_moves += piece.moves if !piece.is_a?(King)
-        #     end
-        # else 
-        #     black_pieces.each do |piece|
-        #         other_moves += piece.moves if !piece.is_a?(King)
-        #     end
-        #     white_pieces.each do |piece|
-        #         opponents_moves += piece.moves 
-        #     end
-        # end
-
-        # overlap = other_moves & opponents_moves
-        # opponents_moves = opponents_moves - overlap
-
-        # king_moves.all? {|move| opponents_moves.include?(move)}
-
-    
 
     def find_king(color)
         king_pos = [] 
@@ -122,21 +116,6 @@ class Board
         return king_pos
     end 
 
-    # def surround_moves(pos)
-    #     i,j = pos
-    #     arr = [
-    #     [i+1, j],
-    #     [i-1, j],
-    #     [i+1, j+1],
-    #     [i-1, j+1],
-    #     [i+1, j-1],
-    #     [i-1, j-1],
-    #     [i, j+1],
-    #     [i, j-1]
-    #     ]
-    #     arr.select {|pos|(0..7).include?(pos[0]) && (0..7).include?(pos[1])}
-    # end
-
     def pieces
     end 
 
@@ -146,7 +125,12 @@ class Board
             subarr.each_with_index do |piece, j|
                 if !piece.is_a?(NullPiece)
                     new_piece = piece.class.new(piece.color, new_board, piece.pos)
-                    new_board[[i,j]] = piece
+                    new_board[[i,j]] = new_piece
+                    if piece.color == :white
+                        new_board.white_pieces<< new_piece  # ensure the white_pieces and black_pieces are populated for use in checkmate
+                    else
+                        new_board.black_pieces<< new_piece
+                    end
                 else
                     new_board[[i,j]] = NullPiece.instance
                 end

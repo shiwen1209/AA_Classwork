@@ -20,15 +20,15 @@ class Display
                     print piece.to_s.colorize(:red).colorize( :background => :light_green)
                 elsif piece.empty? 
                     if (i.even? && j.even?) || (i.odd? && j.odd?)
-                        print "   ".colorize(:background => :light_blue)
+                        print "   ".colorize(:background => :light_magenta)
                     else 
-                        print "   ".colorize(:background => :light_yellow)
+                        print "   ".colorize(:background => :light_white)
                     end
                 else
                     if (i.even? && j.even?) || (i.odd? && j.odd?)
-                        print piece.to_s.colorize(piece.color).colorize( :background => :light_blue)
+                        print piece.to_s.colorize(piece.color).colorize( :background => :light_magenta)
                     else 
-                        print piece.to_s.colorize(piece.color).colorize( :background => :light_yellow)
+                        print piece.to_s.colorize(piece.color).colorize( :background => :light_white)
                     end
                 end
             end 

@@ -1,8 +1,12 @@
-def Player 
+# require_relative "board.rb"
+require_relative "hand.rb"
+
+class Player 
 
     attr_reader :board, :name
     attr_accessor :hand, :chips, :big_blind, :current_bet, :all_in, :active
-    def initalize(name, password, board, chips = 1000)
+
+    def initialize(name, password, board, chips = 1000)
         @name = name
         @board = board 
         @password = password
@@ -25,24 +29,26 @@ def Player
     def get_move
 
         begin
-            puts "please enter your command"
-            input = gets.chomp
-            move, num = input
+            puts "#{@name}, please enter your command"
+            player_input = gets.chomp.split
+            move, num = player_input
             num = num.to_i
             case move
-            when allin
-                self.all_in
-            when bet
+            when "allin"
+                self.go_all_in
+            when "bet"
+                p "abcd"
+                p num
                 self.bet(num)
-            when call
+            when "call"
                 self.call
-            when raiseto
+            when "raiseto"
                 self.raiseto(num)
-            when fold
+            when "fold"
                 self.fold
-            when check
+            when "check"
                 self.check
-            when exit
+            when "exit"
                 #add exiting the game
             end
         rescue StandardError=>e 
@@ -73,14 +79,15 @@ def Player
     end
 
     def bet(num)
+        p "bet"
         # only use this for post flop
-        raise StandardError.new("you cannot use this action") if @board.minimum_bet > start_bet
-        raise StandardError.new("you have to bet at least # {@board.start_bet}") if num < start_bet
+        raise StandardError.new("you cannot use this action") if @board.players.any? {|player| player.current_bet > 0}
+        raise StandardError.new("you have to bet at least # {@board.start_bet}") if num < @board.start_bet
         raise StandardError.new("you don't have enough money") if num > chips
         @board.main_pot += num
         @current_bet += num
         @chips -= num
-        @board.minimum_bet = bet
+        @board.minimum_bet = num
         @board.count += 1
     end
 
@@ -107,17 +114,22 @@ def Player
         # player become inactiv
         # player forego their hands
         self.active = false
+        self.current_bet = 0
     end
 
-    def blind_move
-        if @chips < @board.start_bet
-            self.go_all_in
-        else 
-            @board.main_pot += @board.start_bet
-            @current_bet += @board.start_bet
-            @chips -= @board.start_bet
-            get_move
-        end
-    end
+    # def blind_move
+    #     if @chips < @board.start_bet
+    #         self.go_all_in
+    #     else 
+    #         @board.main_pot += @board.start_bet
+    #         @current_bet += @board.start_bet
+    #         @chips -= @board.start_bet
+    #         get_move
+    #     end
+    # end
+
+    private
+    attr_accessor :password
+
 
 end 

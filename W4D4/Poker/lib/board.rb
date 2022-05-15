@@ -11,16 +11,19 @@ class Board
     # when does a turn end
         # everyone but one person folds
         # more than two people stick to the end reveal cards at showdown
-    attr_accessor :flop, :big_blind_index, :start_bet, :minumum_bet, :count, :players
-    attr_reader :num_players, :deck, :main_pot
-    def initalize(num_players)
+    attr_accessor :flop, :big_blind_index, :start_bet, :minimum_bet, :count, :players, :main_pot
+    attr_reader :num_players, :deck
+
+    def initialize(num_players)
         @flop = []
         @num_players = num_players
         #PLAYERS NEEDS REFACTORING INTO GAME SO THEY CAN HAVE NAMES
-        @players = []
-        # (0...num_players).each do 
-        #     @players << Player.new(self)
-        # end 
+
+        a = Player.new("wendy","88", self)
+        b = Player.new("da","88", self)
+        c = Player.new("charlie","88", self)
+        d = Player.new("oreo","88", self)
+        @players = [a, b, c, d]
         @deck = Deck.new
         @big_blind_index = -1
         # @current_player_index = 1
@@ -28,7 +31,7 @@ class Board
         @minimum_bet = @start_bet # keeps track of minimum bet player needs to match in order to stay in the game
         @main_pot = 0 #keeps track of of size of the pot in a round
         # @side_pots = [] #used when more than 1 person goes all in and their all-ins are different
-        @player_bets = [] #keeps track of each player's bet in each turn
+        # @player_bets = [] #keeps track of each player's bet in each turn
         @count = 0  #keep tracker of player actions
     end
 
@@ -57,17 +60,16 @@ class Board
         deal_players(reserve_cards)
         play_preflop_turn
         
-        #reset player's current bet and minimum bet for post flop
-        @betting_players.each {|player| player.current_bet = 0}
-        @minimum_bet = 0
+        # #reset player's current bet and minimum bet for post flop
+        # @betting_players.each {|player| player.current_bet = 0}
+        # @minimum_bet = 0
 
         # 3. post-flop
         while @active_players.length > 1 || @flop.length < 5
             deal_flop(reserve_cards)
             play_postflop_turn
-            #reset player's current bet and minimum bet for post flop
-            @betting_players.each {|player| player.current_bet = 0}
-            @minimum_bet = 0
+            
+
         end
 
         # 4. divide winnings and reveal cards
@@ -81,32 +83,76 @@ class Board
 
     def deal_players(cards)
         @players.each do |player|
-            player.cards_in_hand << cards.pop
-            player.cards_in_hand << cards.pop
+            player.hand.cards_in_hand << cards.pop
+            player.hand.cards_in_hand << cards.pop
         end
     end
 
     def deal_flop(cards)
-        @flop << cards.pop
+        if @flop.length < 5
+            @flop << cards.pop
+        end
     end
 
     def play_preflop_turn
+       
+        blind_player = players[@big_blind_index]
+        p blind_player.name
+        p blind_player.chips
+        p @start_bet
+        if blind_player.chips > @start_bet
+            blind_player.chips -= @start_bet
+            blind_player.current_bet = @start_bet
+            @main_pot += @start_bet
+        else
+            main_pot += blind_player.chips
+            blind_player.current_bet = blind_player.chips
+            blind_player.chips = 0
+            blind_player.all_in = true
+        end
         i = (big_blind_index + 1) % @num_players
         @count = 0  #count reset to 0
-        unless count == betting_players.length && betting_players.all? {|player| player.current_bet == @minumum_bet}
-            if @player[i].big_blind == true
-                @player[i].blind_move
-            else
-                @players[i].get_move
-            end 
+        until count >= betting_players.length && betting_players.all? {|player| player.current_bet == players[0].current_bet}
+            p "0000000000000000000"
+            p "******"
+            p "number of count: #{count}"
+            p "number of betting player: #{betting_players.length}"
+            players.each {|player| p "#{player.name} has #{player.chips}"}
+            p "*******"
+            players.each {|player| p "#{player.name}'s current bet is #{player.current_bet}"}
+            p "*******"
+            @players[i].get_move
             i = (i+1) % @num_players
+            p count >= betting_players.length
+            p betting_players.all? {|player| player.current_bet == players[0].current_bet}
         end
-
+        p "main pot is #{main_pot}"
+        p "--------------end of preflop--------------------"
     end
 
     def play_postflop_turn
-        #deal a card to the flop
-        @count = 0  #count reset to 0
+        #reset player's current bet and minimum bet for post flop
+        betting_players.each {|player| player.current_bet = 0}
+        @minimum_bet = 0
+        @count = 0 
+        i = big_blind_index #big blind always start first in the post flop
+        #count reset to 0
+        until count >= betting_players.length && betting_players.all? {|player| player.current_bet == players[0].current_bet}
+            p "0000000000000000000"
+            p "******"
+            p "number of count: #{count}"
+            p "number of betting player: #{betting_players.length}"
+            players.each {|player| p "#{player.name} has #{player.chips}"}
+            p "*******"
+            players.each {|player| p "#{player.name}'s current bet is #{player.current_bet}"}
+            p "*******"
+            @players[i].get_move
+            i = (i+1) % @num_players
+            p count >= betting_players.length
+            p betting_players.all? {|player| player.current_bet == players[0].current_bet}
+        end
+        p "main pot is #{main_pot}"
+        p "--------------end of postflop--------------------"
     end
 
 
@@ -117,7 +163,7 @@ class Board
 
 
 
-        end 
+   
 
         #minium_bet turns 0 after each turn post flop
         #all players@current_bet turns 0 after completion of each turn
@@ -126,25 +172,33 @@ class Board
 
         #if someone went all in, if the person_wins, they only win based on what they put in,
         #the remaining pot goes back to the other players
-        
-        
-    end
+
 
 
 
     def reveal_cards
         best_score = nil
+        best_tie_score = nil
         best_player = nil #may need something like minheap to handle ties/2nd vs 3rd place etc
         
+        #HANDLE TIES!! BEST_PLAYER CAN BE ARRAY OR OTHER CONTAINER FOR NOW 
+
         @players.each do |player|
             if player.active
             
-                p_hand, p_score = player.hand.best_five
+                p_hand, p_score, tie_score = player.hand.best_five
 
                 #Handle scoring.. below may need readjusting for side pot BS
                 if !best_score || p_score > best_score
                     best_player = player
                     best_score = p_score
+                elsif p_score == best_score
+                    if tie_score > best_tie_score
+                        best_player = player
+                        best_tie_score = tie_score
+                    elsif tie_score == best_tie_score
+                        #more work to be done...
+                    end
                 end
             else
                 Card.print_empty_cards
@@ -153,7 +207,7 @@ class Board
         end
 
 
-        divide_winnings
+        # divide_winnings
 
     end
 
@@ -163,3 +217,10 @@ class Board
 
 
 end
+
+b = Board.new(4)
+b.big_blind_index = 0 
+b.players[b.big_blind_index].big_blind = true
+b.play_preflop_turn
+b.play_postflop_turn
+

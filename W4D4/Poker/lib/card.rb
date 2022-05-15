@@ -1,6 +1,6 @@
 class Card 
 
-    SUITS = [:hearts, :clubs, :suits, :diamonds]
+    SUITS = [:hearts, :clubs, :spades, :diamonds]
     TYPES = [:ace, :king,
     :queen, 
     :jack, 
@@ -78,7 +78,7 @@ class Card
         when :hearts
             return "♥"
         when :clubs
-            return ♣
+            return "♣"
         else
             raise StandardError.new("Invalid Suit")
         end
@@ -87,13 +87,13 @@ class Card
     def card_picture
         lines = Array.new
         lines[0] = "┌─────────┐ "
-        lines[1] = "│#{suit_s}        │ "  # use two {} one for char, one for space or char
+        lines[1] = "│#{type_s.ljoin(2)}       │ "  # use two {} one for char, one for space or char
         lines[2] = "│         │ "
         lines[3] = "│         │ "
-        lines[4] = "│    #{type_s}    │ "
+        lines[4] = "│    #{suit_s}    │ "
         lines[5] = "│         │ "
         lines[6] = "│         │ "
-        lines[7] = "│        #{suit_s}│ "
+        lines[7] = "│       #{type_s.rjoin(2)}│ "
         lines[8] = "└─────────┘ "
         return lines
     end

@@ -1,0 +1,10 @@
+/Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/board.rb:31:in `move_piece': starting position is empty (StandardError)
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/piece.rb:43:in `move_into_check?'
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/piece.rb:50:in `block in valid_moves'
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/piece.rb:49:in `select'
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/piece.rb:49:in `valid_moves'
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/board.rb:73:in `block in check_mate?'
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/board.rb:72:in `each'
+        from /Users/whshiwen/Desktop/App Academy/AA_Classwork/W4D3/chess_updated v3/board.rb:72:in `check_mate?'
+        from game.rb:20:in `play'
+        from game.rb:43:in `<main>'
