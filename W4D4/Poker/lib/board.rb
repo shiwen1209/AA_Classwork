@@ -45,8 +45,8 @@ class Board
 
     def play_round
         # 0. reset for the new game
-        main_pot = 0
-        @big_blind_index += (@big_blind_index + 1) % @num_players
+        @main_pot = 0
+        @big_blind_index = (@big_blind_index + 1) % @num_players
         @players.each do |player| 
             player.reset
         end
@@ -61,20 +61,18 @@ class Board
         play_preflop_turn
         
         # #reset player's current bet and minimum bet for post flop
-        # @betting_players.each {|player| player.current_bet = 0}
+        # betting_players.each {|player| player.current_bet = 0}
         # @minimum_bet = 0
 
         # 3. post-flop
-        while @active_players.length > 1 || @flop.length < 5
+        while self.active_players.length > 1 && @flop.length < 5
             deal_flop(reserve_cards)
             play_postflop_turn
-            
-
         end
 
         # 4. divide winnings and reveal cards
-        if @active_players.length == 1
-            @active_players[0].chips += main_pot  # the person who didn't fold gets the pot
+        if self.active_players.length == 1
+            self.active_players[0].chips += @main_pot  # the person who didn't fold gets the pot
         else
             # reveal cards if more than two players reach the last round 
             reveal_cards  #the winning person gets the pot
@@ -105,14 +103,14 @@ class Board
             blind_player.current_bet = @start_bet
             @main_pot += @start_bet
         else
-            main_pot += blind_player.chips
+            @main_pot += blind_player.chips
             blind_player.current_bet = blind_player.chips
             blind_player.chips = 0
             blind_player.all_in = true
         end
         i = (big_blind_index + 1) % @num_players
         @count = 0  #count reset to 0
-        until count >= betting_players.length && betting_players.all? {|player| player.current_bet == players[0].current_bet}
+        until (count >= betting_players.length && betting_players.all? {|player| player.current_bet == players[0].current_bet}) || self.active_players.length < 2
             p "0000000000000000000"
             p "******"
             p "number of count: #{count}"
@@ -126,7 +124,7 @@ class Board
             p count >= betting_players.length
             p betting_players.all? {|player| player.current_bet == players[0].current_bet}
         end
-        p "main pot is #{main_pot}"
+        p "main pot is #{@main_pot}"
         p "--------------end of preflop--------------------"
     end
 
@@ -137,7 +135,7 @@ class Board
         @count = 0 
         i = big_blind_index #big blind always start first in the post flop
         #count reset to 0
-        until count >= betting_players.length && betting_players.all? {|player| player.current_bet == players[0].current_bet}
+        until (count >= betting_players.length && betting_players.all? {|player| player.current_bet == players[0].current_bet}) || self.active_players.length < 2
             p "0000000000000000000"
             p "******"
             p "number of count: #{count}"
@@ -151,7 +149,7 @@ class Board
             p count >= betting_players.length
             p betting_players.all? {|player| player.current_bet == players[0].current_bet}
         end
-        p "main pot is #{main_pot}"
+        p "main pot is #{@main_pot}"
         p "--------------end of postflop--------------------"
     end
 
@@ -219,8 +217,4 @@ class Board
 end
 
 b = Board.new(4)
-b.big_blind_index = 0 
-b.players[b.big_blind_index].big_blind = true
-b.play_preflop_turn
-b.play_postflop_turn
-
+b.play_round
