@@ -65,6 +65,14 @@ class Piece
         # new_board.move_piece(@pos, end_pos)
 
         piece = new_board[@pos]
+
+        old_piece = new_board[end_pos]
+        if old_piece.color == :white  #remove the old piece if it's taken by the new piece
+            new_board.white_pieces.delete(old_piece)
+        elsif old_piece.color == :black
+            new_board.black_pieces.delete(old_piece)
+        end
+
         new_board[end_pos] = piece
         piece.pos = end_pos
         new_board[@pos] = NullPiece.instance
@@ -84,7 +92,7 @@ class Piece
     end
 
     def valid_moves
-        p "valid?"
+        # p "valid?"
         self.moves.select do |move|
             # p "x"
             # p move
