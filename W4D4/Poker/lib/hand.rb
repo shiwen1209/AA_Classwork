@@ -26,7 +26,7 @@ class Hand
     end
 
     def best_five
-        #b = self.big_hand
+        #b = big_hand
 
         #DELETE BELOW
         # b = small_hand + [Card.new(:seven, :hearts), Card.new(:queen, :hearts), Card.new(:nine, :hearts), Card.new(:king, :diamonds), Card.new(:eight, :clubs)]
@@ -183,7 +183,7 @@ class Hand
                     i += 1
                 end
                 best_score = 6
-                return [ans, best_score, ans[-1].value * 15 + ans[-2].value]
+                return [ans, best_score, ans[-1].value * 15 + ans[-2].value, (ans[-3].value * 225) + (ans[-4].value * 15)+ ans[-5].value]
             end
         end
 
@@ -227,7 +227,7 @@ class Hand
                         smaller = bad_x
                     end
 
-                    return [ans, best_score, bigger*15 + smaller]
+                    return [ans, best_score, bigger*15 + smaller, ans[-1].value]
 
                 end
                 i -= 1
@@ -245,7 +245,7 @@ class Hand
                     ans << b[i]
                     if ans.length == 5
                         best_score = 2
-                        return [ans, best_score, avoid * 15 + ans[-3].value] #ERROR CAUSER 1
+                        return [ans, best_score, avoid * 15 + ans[-3].value, ans[-2].value*15 + ans[-1].value]
                     end
                 end
                 i -= 1
@@ -254,7 +254,7 @@ class Hand
         end
 
         best_score = 1
-        return [b[2..6], best_score, b[6].value*15 + b[5].value]
+        return [b[2..6], best_score, b[6].value*15 + b[5].value, b[2].value + (b[3].value * 15) + (b[4].value * 225)]
     end
 
     def five_score

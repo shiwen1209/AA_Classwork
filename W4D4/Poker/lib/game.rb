@@ -17,6 +17,7 @@ class Game
 
         i = 0
         while i < @num_players
+            system "clear"
             puts "Player #{i+1}, please enter your name: "
             p_name = gets.chomp
             p_name = p_name[0..11] if p_name.length > 12

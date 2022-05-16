@@ -27,22 +27,76 @@ class Player
     end
 
     def get_move
+        begin
+            print "\33c\e[3J"
+            puts "#{@name}, please enter your password"
+            passw = gets.chomp
+
+            if passw == @password
+
+                f = Array.new(9, "") 
+                hand.small_hand.each do |card|
+                    cp = card.card_picture
+                    (0..8).each do |i|
+                        f[i] += cp[i]
+                    end
+                end
+
+                f.each_with_index do |ele, i|
+                    f[i] = ele + "│ "
+                end
+
+                @board.flop.each do |card|
+                    cp = card.card_picture
+                    (0..8).each do |i|
+                        f[i] += cp[i]
+                    end
+                end
+                    
+                (0..8).each do |line|
+                    puts f[line]
+                end
+
+                puts "#{name}'s Hand".center(23) + "The Flop".center(65)
+                puts "Mainpot is #{@board.main_pot}"
+                puts "Your have #{@chips} chips left"
+                puts "Current minimum bet is #{@board.minimum_bet}"
+                @board.players.each do |player|
+                    puts "#{player.name}'s current bet: #{player.current_bet}"
+                end
+                puts "List of command are:\n 'fold',\n'check',\n 'call',\n 'bet num',\n'raiseto num',\n'allin'"
+            
+                puts "-"*10
+
+
+
+            else
+                raise StandardError.new("wrong password")
+            end
+
+        rescue StandardError=>e
+            puts e
+            retry
+        end
+
 
         begin
             puts "#{@name}, please enter your command"
             player_input = gets.chomp.split
             move, num = player_input
-            num = num.to_i
+            
             case move
             when "allin"
                 self.go_all_in
             when "bet"
-                p "abcd"
-                p num
+                raise StandardError.new("Must enter input with bet!") if num == nil
+                num = num.to_i
                 self.bet(num)
             when "call"
                 self.call
             when "raiseto"
+                raise StandardError.new("Must enter input with raiseto!") if num == nil
+                num = num.to_i
                 self.raiseto(num)
             when "fold"
                 self.fold
@@ -50,9 +104,12 @@ class Player
                 self.check
             when "exit"
                 #add exiting the game
+            else
+                raise StandardError=> "Wrong command, please choose one of the valid commands"
             end
         rescue StandardError=>e 
-            puts e
+            puts "Error Occurred: #{e}"
+            puts "Please try again"
             retry
         end
     end 
@@ -94,7 +151,9 @@ class Player
     end
 
     def raiseto(num)
+        raise StandardError.new("did not enter a valid number to raise to") if num == nil
         bet = num - @current_bet
+        raise StandardError.new("your bet is lower than the current bet of #{@board.minimum_bet}!") if bet < @board.minimum_bet #?
         raise StandardError.new("you dont have enough money") if bet >= @chips
         raise StandardError.new("you cannot raise") if @board.minimum_bet <= 0 
         @board.main_pot += bet
