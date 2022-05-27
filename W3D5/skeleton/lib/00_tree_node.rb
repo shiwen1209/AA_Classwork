@@ -55,12 +55,9 @@ class PolyTreeNode
       else
          self.children.each do |child|
             a = child.dfs(target)
-            if a != nil 
-               return a
-            end 
+            return a if a != nil
          end
       end
-
       return nil 
 
    end

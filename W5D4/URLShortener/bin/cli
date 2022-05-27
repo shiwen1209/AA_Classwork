@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+p = false
+
+while p == false
+    p = true
+    puts "Please enter your email"
+    email = gets.chomp 
+    user = User.find_by_email(email)
+    if user == nil
+        puts "Please try again!"
+        p = false
+    end 
+    
+end
+
+user.save!
+
+puts user
+
+puts "Enter 'create' if you'd like to create a shortend url"
+puts "Enter 'visit' if you'd like to visit a shortened url"
+
+input = gets.chomp
+
+
+if input == "create"
+    puts "Please enter the long url:"
+    long_url = gets.chomp
+    code = ShortenedUrl.random_code
+    puts "Here's your shortened url: #{code}"
+    puts long_url
+    Launchy.open(long_url)
+
+    short = ShortenedUrl.factory_create(user, long_url)
+    Visit.record_visit!(user, short)
+
+elsif input == "visit"
+    puts "Please enter the short url:"
+    short_url = gets.chomp
+    long_url = ShortenedUrl.find_by_short_link(short_url).long_link
+    puts long_url
+    Launchy.open(long_url)
+else
+    puts "Wrong command"
+end
+
