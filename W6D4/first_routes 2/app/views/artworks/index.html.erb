@@ -1,0 +1,12 @@
+<h1>All the arts:</h1>
+
+
+
+<ul>
+    <% @artworks.each do |art|%>
+        <li>Title: <%= art.title%>
+        <li>Artist: <%= art.artist.username%>
+        <li>Image URL: <%= art.image_url%>
+        <h1></h1>
+        <% end %>
+<ul>

@@ -13,24 +13,33 @@ class ArtworksController < ApplicationController
             @artworks = Artwork.all
         end 
 
-        render json: @artworks
+        render :index
     end 
+
+    def new 
+        @artwork = Artwork.new
+        render :new
+    end
 
     def create
         @artwork = Artwork.new(artwork_params)
 
         if @artwork.save!
-            render json: @artwork
+            redirect_to artwork_url(@artwork)
         else 
-            render json: @artwork.errors.full_messages, status: unprocessable_entity
+            render :new
         end 
     end
 
     def show
         @artwork = Artwork.find(params[:id])
-        render json: @artwork
+        render :show
     end
 
+    def edit
+        @artwork = Artwork.find_by(id: params[:id])
+        render :edit
+    end
     def update
         @artwork = Artwork.find(params[:id])
         if @artwork.update(artwork_params)

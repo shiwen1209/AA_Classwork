@@ -7,7 +7,7 @@ class UsersController < ApplicationController
         else 
             @users = User.all
         end
-        render json: @users
+        render :index
     end
 
     def create

@@ -1,0 +1,30 @@
+
+<% if action == :edit %>
+    <% action_url = artwork_url %>
+<% else %>
+    <% action_url = artworks_url %>
+<% end %>
+
+
+<form action="<%= action_url %>" method="post">
+
+<% if action == :edit %>
+    <input type="hidden" name="_method" value = "patch">
+<% end %>
+
+<lable for="title" >Title</label>
+<input id = "title", type="text" name="artwork[title]" value = "<%= artwork.title %>">
+<br>
+<lable for="artist" >Artist</label>
+<input id = "artist", type="text" name="artwork[artist_id]" value = "<%= artwork.artist_id %>">
+<br>
+<lable for="image_url" >Image Url</label>
+<input id = "image_url", type="text" name="artwork[image_url]" value = "<%= artwork.image_url %>">
+<br>
+<input type="submit" value="<%= action == :edit ? 'update art' : 'add art'%>">
+</form>
+<br>
+
+<a href="<%= artworks_url %>">See all the books</a>
+
+
