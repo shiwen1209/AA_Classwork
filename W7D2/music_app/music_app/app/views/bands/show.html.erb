@@ -1,0 +1,15 @@
+<h2><%= @band.name %></h2>
+<br>
+<h3>Links</h3>
+
+<p id="show_buttons">
+<a href="<%= bands_url%>">back to home</a>
+<a href="<%= edit_band_url(@band)%>">edit band</a>
+<a href="<%= bands_url%>">all bands</a>
+<form action="<%= band_url(@band) %>" method = "post">
+    <input type="hidden" name = "_method" value = "delete">
+    <input type="hidden" name = "authenticity_token" value ="<%= form_authenticity_token%>">
+    <input type="submit" value = "destory">
+</form>
+</p>
+

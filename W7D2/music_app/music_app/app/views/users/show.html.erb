@@ -1,0 +1,11 @@
+
+<header>
+<a id="home" href="<%= user_url(@user) %>">Take me Home</a>
+<p class="header">Logged in as: <%= @user.email %></p>
+<form action="<%= session_url %>" method="post">
+    <input type="hidden" , name="_method", value="delete">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <input type="submit", value="logout">
+</form>
+</header>
+<h2>BANDS</h2>

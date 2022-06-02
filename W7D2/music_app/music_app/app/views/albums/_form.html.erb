@@ -1,0 +1,24 @@
+<% if type == :new %>
+    <% action_url = albums_url %>
+<% else %>
+    <% action_url = album_url(ablum) %>
+<% end %>
+
+<form action="<%= action_url %>" method = "post">
+<% if type == :edit %>
+    <input type="hidden" name = "_method" value = "patch">
+<% end %>
+<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+<label for="name">name</label>
+<input id="name" type="text" name=album[title] value="<%= album.title%>">
+<label for="band">name</label>
+<select name="album[band_id]" id="band">
+<option disabled selected>-- select a band --</option> 
+<% Band.all.each do |band| %>
+<option value="<%= band.name%>"></option>
+<% end %>
+</select>
+
+<input type="submit", value="Submit">
+
+</form>

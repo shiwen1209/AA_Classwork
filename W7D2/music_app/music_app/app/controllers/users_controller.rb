@@ -1,0 +1,31 @@
+class UsersController < ApplicationController
+
+    def new 
+        @user = User.new
+        render :new 
+    end
+
+
+    def create # for sign up
+        @user = User.new(user_params)
+        if @user.save #use the bang(save!) flash error doesn't work
+            self.login!(@user)
+        else 
+            flash[:errors] = @user.errors.full_messages
+            render :new
+        end
+    end
+
+    def user_params 
+        params.require(:user).permit(:email, :password)
+    end
+
+    def show
+        @user = User.find_by(id: params[:id])
+        if @user
+            render :show
+        else 
+            redirect_to :new 
+        end
+    end
+end

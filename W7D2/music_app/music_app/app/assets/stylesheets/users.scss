@@ -1,0 +1,32 @@
+// Place all the styles related to the Users controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+header {
+    display: flex;
+    justify-content: space-around;
+    background-color: brown;
+}
+
+#home {
+    background-color: skyblue;
+    color: black;
+    border-radius: 20%;
+    padding: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+h2 {
+    display: flex;
+    justify-content: center;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 200;
+    color: green;
+    background-color: beige;
+}
+
+.form {
+    display: flex;
+    justify-content: center;
+}
