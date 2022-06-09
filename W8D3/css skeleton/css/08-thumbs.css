@@ -1,0 +1,33 @@
+/* PHASE 2: Thumbs */
+
+.thumb img{
+
+    max-height: 60px;
+    max-width: 60px;
+    height: 60px;
+    width: 60px;
+    border-radius: 10%;
+    border: 1px solid black;
+}
+
+.friends li{
+    padding: 4px;
+}
+
+
+.friends .row {
+    display: flex;
+}
+
+.thumb:before{
+    content: "";
+    display: none;   
+    position: absolute;
+}
+
+.thumb:after{
+    content:attr(title);
+    display: none;
+    position: absolute;
+    background: black;
+}

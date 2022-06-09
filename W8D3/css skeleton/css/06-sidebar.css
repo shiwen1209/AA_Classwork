@@ -1,0 +1,35 @@
+/* PHASE 0: Sidebar */
+.profile-picture {
+    display: block;
+    margin-top: -120px;
+    position: relative;
+    border: 1px solid black;
+    border-radius: 10%;
+}
+
+#profile li{
+    display: block;
+    padding: 10px;
+}
+
+#sen {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+#links a{
+    font-weight: 700;
+    font-size: 14px;
+
+
+}
+#links li{
+        border-bottom: 1px solid lightgray;
+        width: 100%;
+        padding: 3px;
+    
+}
+
+#links li:first-child{
+    border-top: 1px solid lightgray ;
+}
