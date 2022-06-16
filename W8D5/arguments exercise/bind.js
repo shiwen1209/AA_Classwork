@@ -1,9 +1,9 @@
 Function.prototype.myBind = function(context) {
     let that = this 
-    let args =  Array.from(arguments).slice(1);
+    let args =  Array.from(arguments);
     return function(){
         args2 = args.concat(Array.from(arguments));
-        that.apply(context, args2);
+        that.apply(args2[0],args2.slice(1));
     }
 }
 
